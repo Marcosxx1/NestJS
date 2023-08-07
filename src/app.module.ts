@@ -3,9 +3,12 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EventsController } from './events.crontroller';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Event } from './event.entity';
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([Event]),
+
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
@@ -13,6 +16,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       username: 'postgres',
       password: 'example',
       database: 'nest-events',
+      entities: [Event],
+      synchronize: true,
     }),
   ],
   controllers: [AppController, EventsController],
