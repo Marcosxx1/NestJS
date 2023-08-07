@@ -11,52 +11,42 @@ import {
 import { CreateEventDto } from './create-event.dto';
 import { UpdateEventDto } from './update-event.dto';
 import { Event } from './event.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Controller('events')
 export class EventsController {
-  private events: Event[] = [];
+  constructor(
+    @InjectRepository(Event)
+    private readonly repository: Repository<Event>,
+  ) {
+    console.log();
+  }
 
   @Get()
-  findAll() {
-    return this.events;
+  async findAll() {
+    return await this.repository.find();
   }
 
   @Get(':id')
-  findOne(@Param('id') id) {
-    const event = this.events.find((event) => event.id === +id);
-    return event;
+  async findOne(@Param('id') id) {
+    return await this.repository.findOne({ where: { id } });
   }
 
   @Post()
-  create(@Body() body: CreateEventDto) {
-    const newEvent = {
-      ...body,
-      when: new Date(body.when),
-      id: this.events.length + 1,
-      name: body.name.toUpperCase(),
-      description: body.description.toUpperCase(),
-    };
-    this.events.push(newEvent);
+  async create(@Body() body: CreateEventDto) {
+    return await this.repository.save(body);
   }
 
   @Patch(':id')
-  update(@Param('id') id, @Body() body: UpdateEventDto) {
-    const index = this.events.indexOf(
-      this.events.find((event) => event.id === +id),
-    );
-
-    this.events[index] = {
-      ...this.events[index],
-      ...body,
-      when: body.when ? new Date(body.when) : this.events[index].when,
-    };
-    return this.events[index];
+  async update(@Param('id') id, @Body() body: UpdateEventDto) {
+    const event = await this.repository.findOne({ where: { id } });
+    return await this.repository.save({ ...event, ...body });
   }
 
   @Delete(':id')
   @HttpCode(204)
-  delete(@Param('id') id) {
-    this.events.findIndex((event) => event.id === +id);
-    this.events.splice(id - 1, 1);
+  async delete(@Param('id') id) {
+    await this.repository.delete(id);
   }
 }
