@@ -3,21 +3,22 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EventsModule } from './events/events.module';
-import { Event } from './events/event.entity';
 import { ConfigModule } from '@nestjs/config';
+import ormConfig from './config/orm.config';
+import ormConfigProd from './config/orm.config.prod';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(), //Carrega as variaveis de ambiente
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DB_HOST,
-      port: Number(process.env.DB_PORT),
-      username: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      entities: [Event],
-      synchronize: true,
+    //Carrega as variaveis de ambiente
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [ormConfig], //Carrega as configuraçães do orm.
+      envFilePath: '.env', //podemos definir o caminho do .env
+      expandVariables: true,
+    }),
+    TypeOrmModule.forRootAsync({
+      useFactory:
+        process.env.NODE_ENV !== 'production' ? ormConfig : ormConfigProd,
     }),
 
     EventsModule,
