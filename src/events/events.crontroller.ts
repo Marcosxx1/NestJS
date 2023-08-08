@@ -4,6 +4,8 @@ import {
   Delete,
   Get,
   HttpCode,
+  Logger,
+  NotFoundException,
   Param,
   Patch,
   Post,
@@ -17,6 +19,8 @@ import { Repository } from 'typeorm';
 
 @Controller('events')
 export class EventsController {
+  private readonly logger = new Logger(EventsController.name);
+
   constructor(
     @InjectRepository(Event)
     private readonly repository: Repository<Event>,
@@ -26,12 +30,25 @@ export class EventsController {
 
   @Get()
   async findAll() {
-    return await this.repository.find();
+    this.logger.log(`Hit the findAll endpoint`);
+
+    const events = await this.repository.find();
+    this.logger.debug(`Found ${events.length} events`);
+
+    if (!events) {
+      throw new NotFoundException();
+    }
+    return events;
   }
 
   @Get(':id')
   async findOne(@Param('id') id) {
-    return await this.repository.findOne({ where: { id } });
+    const events = await this.repository.findOne({ where: { id } });
+
+    if (!events) {
+      throw new NotFoundException();
+    }
+    return events;
   }
 
   @Post()
@@ -42,13 +59,20 @@ export class EventsController {
 
   @Patch(':id')
   async update(@Param('id') id, @Body() body: UpdateEventDto) {
-    const event = await this.repository.findOne({ where: { id } });
-    return await this.repository.save({ ...event, ...body });
+    const events = await this.repository.findOne({ where: { id } });
+    if (!events) {
+      throw new NotFoundException();
+    }
+    return await this.repository.save({ ...events, ...body });
   }
 
   @Delete(':id')
   @HttpCode(204)
   async delete(@Param('id') id) {
-    await this.repository.delete(id);
+    const events = this.repository.delete(id);
+    if (!events) {
+      throw new NotFoundException();
+    }
+    return events;
   }
 }
