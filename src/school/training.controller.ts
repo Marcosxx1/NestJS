@@ -1,4 +1,4 @@
-import { Controller, Post } from "@nestjs/common";
+import { Controller, Post } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Subject } from './subject.entity';
@@ -18,7 +18,7 @@ export class TrainingController {
     // const subject = new Subject();
     // subject.name = 'Math';
 
-    const subject = await this.subjectRepository.findOne(3);
+    const subject = await this.subjectRepository.findOne({ where: { id: 3 } });
 
     // const teacher1 = new Teacher();
     // teacher1.name = 'John Doe';
@@ -37,9 +37,8 @@ export class TrainingController {
     // user.profile = null;
     // Save the user here
 
-
-    const teacher1 = await this.teacherRepository.findOne(5);
-    const teacher2 = await this.teacherRepository.findOne(6);
+    const teacher1 = await this.teacherRepository.findOne({ where: { id: 5 } });
+    const teacher2 = await this.teacherRepository.findOne({ where: { id: 6 } });
 
     return await this.subjectRepository
       .createQueryBuilder()
@@ -60,9 +59,10 @@ export class TrainingController {
     // );
 
     // await this.subjectRepository.save(subject);
-    await this.subjectRepository.createQueryBuilder('s')
+    await this.subjectRepository
+      .createQueryBuilder('s')
       .update()
-      .set({ name: "Confidential" })
+      .set({ name: 'Confidential' })
       .execute();
   }
 }
