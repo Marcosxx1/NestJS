@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CreateEventDto } from './create-event.dto';
 import { UpdateEventDto } from './update-event.dto';
@@ -34,7 +35,8 @@ export class EventsController {
   }
 
   @Post()
-  async create(@Body() body: CreateEventDto) {
+  async create(@Body(ValidationPipe) body: CreateEventDto) {
+    console.log(body);
     return await this.repository.save(body);
   }
 
