@@ -4,6 +4,7 @@ import { Event } from './event.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable, Logger } from '@nestjs/common';
 import { AttendeeAnswerEnum } from './attendee.entity';
+import { ListEvents, WhenEventFilter } from './input/list.events';
 
 @Injectable()
 export class EventsService {
@@ -37,8 +38,23 @@ export class EventsService {
           { answer: AttendeeAnswerEnum.Accepted }))
       ;
 
-
   }
+
+  public async getEventsWithAttendeeCountFiltered(filter?: ListEvents) {
+    let query = this.getEventsWithAttendeeCountQuery();
+
+    if (!filter) {
+      return query.getMany();
+    }
+
+    if (filter.when) {
+      if (filter.when == WhenEventFilter.Today) {
+        query = query.andWhere('e.when >= CURRENT_DATE AND e.when <=CURRENT_DATE + INTERVAL 1 DAY', { today: new Date() });
+
+      }
+    }
+  }
+
 
   public async getEvent(id: number): Promise<Event | undefined> {
     const query = this.getEventsWithAttendeeCountQuery()
