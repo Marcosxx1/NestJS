@@ -40,7 +40,7 @@ export class EventsController {
     const events = await this.repository.find();
     this.logger.debug(`Found ${events.length} events`);
 
-    if (!events) {
+    if (events.length === 0) {
       throw new NotFoundException();
     }
     return events;
