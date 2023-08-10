@@ -10,6 +10,7 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import { CreateEventDto } from './input/create-event.dto';
@@ -20,6 +21,9 @@ import { Attendee } from './attendee.entity';
 import { EventsService } from './events.service';
 import { UpdateEventDto } from './input/update-event.dto';
 import { ListEvents } from './input/list.events';
+import { CurrentUser } from 'src/auth/current.user.decorator';
+import { User } from 'src/auth/user.entity';
+import { AuthGuardJwt } from 'src/auth/auth-guard.jwt';
 
 @Controller('events')
 export class EventsController {
@@ -36,7 +40,7 @@ export class EventsController {
   }
 
   @Get()
-  async findAll(@Query() filter: ListEvents) {
+  async findAll() {
     this.logger.log(`Hit the findAll endpoint`);
 
     const events = await this.repository.find();
@@ -46,15 +50,6 @@ export class EventsController {
       throw new NotFoundException();
     }
     return events;
-  }
-
-  @Get('practice2')
-  async practice() {
-    return await this.repository
-      .createQueryBuilder('e')
-      .orderBy('e.id', 'DESC')
-      .select(['e.id', 'e.name'])
-      .getMany();
   }
 
   @Get(':id')
@@ -68,9 +63,12 @@ export class EventsController {
   }
 
   @Post()
-  async create(@Body(ValidationPipe) body: CreateEventDto) {
-    console.log(body);
-    return await this.repository.save(body);
+  @UseGuards(AuthGuardJwt)
+  async create(
+    @Body(ValidationPipe) body: CreateEventDto,
+    @CurrentUser() user: User,
+  ) {
+    return await this.eventsService.createEvent(body, user);
   }
 
   @Patch(':id')
@@ -85,7 +83,7 @@ export class EventsController {
   @Delete(':id')
   @HttpCode(204)
   async delete(@Param('id') id) {
-    const events = this.repository.delete(id);
+    const events = this.eventsService.deleteEvent(id);
     if (!events) {
       throw new NotFoundException();
     }
