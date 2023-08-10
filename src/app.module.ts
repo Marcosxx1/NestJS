@@ -27,6 +27,6 @@ import { SchoolModule } from './school/school.module';
     SchoolModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService], //tudo que é @Injectable é um provider
 })
 export class AppModule {}

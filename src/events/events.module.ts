@@ -8,7 +8,7 @@ import { EventsService } from './events.service';
 @Module({
   imports: [TypeOrmModule.forFeature([Event, Attendee])],
   controllers: [EventsController],
-  providers: [EventsService],
+  providers: [EventsService], //tudo que é @Injectable é um provider
 })
 // eslint-disable-next-line prettier/prettier
 export class EventsModule { }

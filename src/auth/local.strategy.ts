@@ -34,7 +34,6 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
     if (!user) {
       this.logger.debug(`User ${username} not found`);
-      console.log(user);
       throw new UnauthorizedException();
     }
 
