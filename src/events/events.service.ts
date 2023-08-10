@@ -1,10 +1,12 @@
 /* eslint-disable prettier/prettier */
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { Event } from './event.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable, Logger } from '@nestjs/common';
 import { AttendeeAnswerEnum } from './attendee.entity';
 import { ListEvents, WhenEventFilter } from './input/list.events';
+import { CreateEventDto } from './input/create-event.dto';
+import { User } from 'src/auth/user.entity';
 
 @Injectable()
 export class EventsService {
@@ -65,5 +67,22 @@ export class EventsService {
     return await query.getOne();
   }
 
+  public async createEvent(input: CreateEventDto, user: User): Promise<Event> {
+    return await this.eventsRepository.save({
+      ...input,
+      organizer: user,
+      when: new Date(input.when),
+    });
+
+  }
+
+  public async deleteEvent(id: number): Promise<DeleteResult> {
+    return await this.eventsRepository
+      .createQueryBuilder()
+      .delete()
+      .from(Event)
+      .where('id = :id', { id })
+      .execute()
+  }
 
 }
