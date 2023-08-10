@@ -34,11 +34,13 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
     if (!user) {
       this.logger.debug(`User ${username} not found`);
+      console.log(user);
       throw new UnauthorizedException();
     }
 
     if (password !== user.password) {
       this.logger.debug(`Invalid password for user ${username}`);
+      console.log(user);
       throw new UnauthorizedException();
     }
     return user;
