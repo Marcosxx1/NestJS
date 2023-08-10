@@ -7,6 +7,7 @@ import { Profile } from './profile.entity';
 import { User } from './user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Profile, User]),
@@ -19,6 +20,6 @@ import { AuthService } from './auth.service';
     })
   })],
   controllers: [AuthController],
-  providers: [LocalStrategy, AuthService],//tudo que é @Injectable é um provider
+  providers: [LocalStrategy, JwtStrategy, AuthService],//tudo que é @Injectable é um provider
 })
 export class AuthModule { }
