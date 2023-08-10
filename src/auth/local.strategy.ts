@@ -39,7 +39,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException();
     }
 
-    if (password !== user.password) {
+    if (!(await bcrypt.compare(password, user.password))) {
       this.logger.debug(`Invalid password for user ${username}`);
       console.log(user);
       throw new UnauthorizedException();

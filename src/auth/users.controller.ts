@@ -11,7 +11,9 @@ export class UserController {
     private readonly authService: AuthService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) { }
+  ) {
+    console.log();
+  }
 
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
