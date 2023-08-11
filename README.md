@@ -235,7 +235,7 @@ response 204 No Content
 
 Contributions are welcome! If you find any issues or improvements, please create a pull request or open an issue.
 
-###Next Steps
+### Next Steps
 - Authenticate all routes that needs to, right now only create event is authenticated
 - Use events.service instead of repository on controller
 - Better relations and use of TypeORM
